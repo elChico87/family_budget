@@ -2,7 +2,7 @@
   session_start();
 
   if ((!isset($_POST['username']))||(!isset($_POST['password']))){
-    header('Location: login.php');
+    header('Location: login.phtml');
     exit();
   }
 

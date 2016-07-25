@@ -1,9 +1,8 @@
 <?
   session_set_cookie_params(300,'/');
   session_start();
-  $test = session_get_cookie_params();
   if (!isset($_SESSION['logged'])) {
-    header('Location: login.php');
+    header('Location: login.phtml');
     exit();
   }
 ?>
@@ -28,7 +27,7 @@
 </head>
 <body>
   <?php
-
+  setlocale(LC_TIME, 'pl_PL', 'pl', 'Polish_Poland.28592');
   $connection = new PDO('mysql:dbname=kamjol_test;host=localhost;port=3306', 'kamjol_test', 'Tester123', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
   $aid = $connection->prepare("SELECT id FROM BUDGET ORDER BY id DESC LIMIT 5", array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
   $aid->execute();
@@ -46,6 +45,12 @@
   $budget_name = $connection->prepare('SELECT month_name FROM BUDGET WHERE id = :id');
   $budget_name->bindValue(':id', $highest_budget_id, PDO::PARAM_INT);
   $budget_name->execute();
+  $name = $budget_name -> fetch();
+  $name2 = substr($name[0],0,2);
+  $date = DateTime::createFromFormat('m/Y', $name[0]);
+
+  $mon_name = $date->format('F');
+  $yer_name = $date->format('Y');
 
   $budget_sum = $connection -> prepare('SELECT SUM(plan_value) FROM BUD_PARAM_GROUP WHERE fk_budget = :id');
   $budget_sum->bindValue(':id', $highest_budget_id, PDO::PARAM_INT);
@@ -63,6 +68,27 @@
   $budget_reward2->bindValue(':id', $highest_budget_id, PDO::PARAM_INT);
   $budget_reward2->execute();
 
+  function month_polish($mon_name)
+
+  {
+
+   $mon_name = str_replace('January', 'Styczeń', $mon_name);
+   $mon_name = str_replace('February', 'Luty', $mon_name);
+   $mon_name = str_replace('March', 'Marzec', $mon_name);
+   $mon_name = str_replace('April', 'Kwiecień', $mon_name);
+   $mon_name = str_replace('May', 'Maj', $mon_name);
+   $mon_name = str_replace('June', 'Czerwiec', $mon_name);
+   $mon_name = str_replace('July', 'Lipiec', $mon_name);
+   $mon_name = str_replace('August', 'Sierpień', $mon_name);
+   $mon_name = str_replace('September', 'Wrzesień', $mon_name);
+   $mon_name = str_replace('October', 'Październik', $mon_name);
+   $mon_name = str_replace('November', 'Listopad', $mon_name);
+   $mon_name = str_replace('December', 'Grudzień', $mon_name);
+
+   return $mon_name;
+
+  }
+   $test = month_polish($mon_name);
 
   ?>
 <div class="container-fluid">
@@ -96,16 +122,15 @@
   </nav>
 <div class="container">
   <div class="jumbotron">
-    <h2>Budżet rodzinny</h1>
-    <p>za okres: <u> <? $name = $budget_name -> fetch(); echo $name[0]; ?></u></p>
+    <p><u> <? echo  $test." ". $yer_name; ?></u></p>
     <div class="budget_info">
-    <p>Wynagrodzenie: <strong><? $reward = $budget_reward ->fetch(); echo $reward[0];?> <span> zł</span></strong></p>
-    <p>Stan bieżący: <strong><? $reward2 = $budget_reward2 ->fetch(); $sum2 = $budget_sum2 -> fetch(); echo $reward[0] - $sum2[0];?><span> zł</span></strong></p>
-    <p>Ile procent budżetu wykorzystano: <strong><? echo round((($sum2[0]/$reward[0])*100),2);?><span>%</span></strong></p>
-    <p class="text-success">Oszędności: <strong><? $reward = $budget_reward ->fetch(); echo $reward[0];?> <span> zł</span></strong></p>
-    <p>w tym, pożyczyliśmy: <strong><? $reward = $budget_reward ->fetch(); echo $reward[0];?> <span> zł</span></strong></p>
-
-  </div>
+      <p>Wynagrodzenie: <strong><? $reward = $budget_reward ->fetch(); echo $reward[0];?> <span> zł</span></strong></p>
+      <p>Stan bieżący: <strong><? $reward2 = $budget_reward2 ->fetch(); $sum2 = $budget_sum2 -> fetch(); echo $reward[0] - $sum2[0];?><span> zł</span></strong></p>
+      <p>Ile procent budżetu wykorzystano: <strong><? echo round((($sum2[0]/$reward[0])*100),2);?><span>%</span></strong></p>
+      <p class="text-success">Oszędności: <strong><? $reward = $budget_reward ->fetch(); echo $reward[0];?> <span> zł</span></strong></p>
+      <p>w tym, pożyczyliśmy: <strong><? $reward = $budget_reward ->fetch(); echo $reward[0];?> <span> zł</span></strong></p>
+      <p>Ostatnia aktualizacja: </p>
+    </div>
   </div>
 
     <a href= "dodaj.php" class="btn btn-success" role="button">Dodaj nowy wydatek</a>
