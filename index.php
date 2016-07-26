@@ -27,7 +27,6 @@
 </head>
 <body>
   <?php
-  setlocale(LC_TIME, 'pl_PL', 'pl', 'Polish_Poland.28592');
   $connection = new PDO('mysql:dbname=kamjol_test;host=localhost;port=3306', 'kamjol_test', 'Tester123', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
   $aid = $connection->prepare("SELECT id FROM BUDGET ORDER BY id DESC LIMIT 5", array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
   $aid->execute();
@@ -67,6 +66,11 @@
   $budget_reward2 = $connection -> prepare('SELECT income_value FROM BUD_INCOME_PARAM WHERE (fk_budget = :id)');
   $budget_reward2->bindValue(':id', $highest_budget_id, PDO::PARAM_INT);
   $budget_reward2->execute();
+
+  $last_update = $connection -> prepare('SELECT p.date_create FROM `BUD_PARAM_VALUE_GROUP` AS p INNER JOIN `BUD_PARAM_GROUP` AS pg ON p.fk_bud_param_group = pg.ID WHERE fk_budget = :fk_budget ORDER BY p.date_create DESC LIMIT 1');
+  $last_update->bindValue(':fk_budget', $highest_budget_id, PDO::PARAM_INT);
+  $last_update->execute();
+  $last_update2 = $last_update->fetch();
 
   function month_polish($mon_name)
 
@@ -129,7 +133,7 @@
       <p>Ile procent budżetu wykorzystano: <strong><? echo round((($sum2[0]/$reward[0])*100),2);?><span>%</span></strong></p>
       <p class="text-success">Oszędności: <strong><? $reward = $budget_reward ->fetch(); echo $reward[0];?> <span> zł</span></strong></p>
       <p>w tym, pożyczyliśmy: <strong><? $reward = $budget_reward ->fetch(); echo $reward[0];?> <span> zł</span></strong></p>
-      <p>Ostatnia aktualizacja: </p>
+      <p>Ostatnia aktualizacja: <span><? echo $last_update2[0];?></span> przez: </p>
     </div>
   </div>
 
