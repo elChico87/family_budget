@@ -154,7 +154,7 @@
             <th>Akcje</th>
           </tr>
         </thead>
-
+<tbody>
         <?php
         foreach($budget_list as $row1){
         ?>

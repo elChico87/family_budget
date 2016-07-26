@@ -17,10 +17,6 @@
   <link rel="icon" href="../../favicon.ico">
   <title>Budżet rodzinny | Nowy wydatek</title>
   <link href="css/bootstrap.css" rel="stylesheet">
-  <link href="css/bootstrap-datepicker.css" rel="stylesheet">
-  <link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/font-awesome.min.css">
-  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/datatables.css"/>
   <link href="css/starter-template.css" rel="stylesheet">
   <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
@@ -33,6 +29,7 @@
   $budget_list->bindValue(':name', $highest_budget_id, PDO::PARAM_INT);
   $budget_list->execute();
   ?>
+
 <div class="container-fluid">
   <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container-fluid">
@@ -60,23 +57,27 @@
           </li>
         </ul>
       </div><!-- /.navbar-collapse -->
-
     </div><!-- /.container-fluid -->
   </nav>
-  <div class="container">
-  <div class="jumbotron">
-    <h2>Budżet rodzinny</h1>
+  <div class="container-fluid">
+  <div class="jumbotron col-sm-offset-2 col-sm-10">
     <p>Dodawanie nowego wydatku</p>
   </div>
-    <form class="form-horizontal" role="form" action="dodaj.php" method="post">
-      <table class="table table-striped">
-	    <thead>
-		<tr>
-			<th>Składnik</th>
-			<th>Kwota</th>
-		</tr>
-	</thead>
-	<tbody>
+  <form class="form-horizontal col-sm-offset-2 col-sm-10" role="form" action="add.php" method="post">
+    <div class="form-group">
+      <div class="col-sm-3">
+        <button type="submit" class="btn btn-success">Zapisz</button>
+      </div>
+    </div>
+    <table class="table table-striped" id="example">
+	       <thead>
+           <tr>
+             <th>Składnik</th>
+             <th>Kwota (w zł)</th>
+             <th>Opis</th>
+           </tr>
+         </thead>
+         <tbody>
 <?php
 	foreach($budget_list as $row){
 	?>
@@ -85,23 +86,27 @@
 		<td>
 			<input type="text" class="form-control" name = "input[<?= $row['id']; ?>]" size="2">
 		</td>
-	</tr>
+    <td>
+      <input type="text" class="form-control" name = "description[<?= $row['id']; ?>]" size="2">
+	  </tr>
 	<?php
 	}
-	?>
+	?><tfoot>
+    <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+  </tfoot>
 	</tbody>
 </table>
 ​
 <?php
 $budget_list->closeCursor();
 ?>
-<div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Dodaj</button>
-            </div>
-        </div>
+
     </form>
-    <a href= "index.php" class="btn btn-success" role="button">Wróć do budżetu</a>
+
 
 
 <?php
@@ -132,12 +137,13 @@ $budget_list->closeCursor();
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script type="text/javascript" src="js/datatables.js"></script>
 <script src="js/bootstrap.min.js"></script>
-<script src="js/bootstrap-datepicker.js"></script>
-<script src="js/bootstrap-datepicker.pl.min.js"></script>
+<script>$(document).ready( function () {
+    $('#example').DataTable();
+} );</script>
 
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="js/ie10-viewport-bug-workaround.js"></script>
+
 </body>
 ​
 </html>
