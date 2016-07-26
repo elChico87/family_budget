@@ -138,7 +138,6 @@
   </div>
 
     <a href= "dodaj.php" class="btn btn-success" role="button">Dodaj nowy wydatek</a>
-    <a href= "create.php" class="btn btn-success" role="button">Dodaj nowy budżet</a>
     <a href= "income.php" class="btn btn-success" role="button">Dodaj nowe wpływy</a>
       <table class="table table-striped table-bordered" id="example">
         <thead>
@@ -167,10 +166,10 @@
     <p><?$sum8 = $budget_list2 -> fetch(); echo $sum8[0];?></p>
 </td>
 <td><a href="index4.php?pid=<?= $row1['id']; ?>"><i class="fa fa-search-plus" aria-hidden ="true"></i></a></td>
-<td><? if ($row1['plan_value'] < $sum8[0]) { echo '<div class="alert alert-danger">Przekroczone!</div>';} else {echo '<div class="alert alert-success">OK!</div>';}
+<td><? if ($row1['plan_value'] < $sum8[0]) { echo '<div class="alert alert-danger alert-table">Przekroczone!</div>';} else {echo '<div class="alert alert-success alert-table">OK!</div>';}
 ?>
 </td>
-<td><p><? if ($row1['ispaid'] == 'Tak') {echo '<div class="alert alert-info">Tak!</div>';} else { echo 'Nie';} ?></p>
+<td><p><? if ($row1['ispaid'] == 'Tak') {echo '<div class="alert alert-info alert-table">Tak!</div>';} else { echo 'Nie';} ?></p>
 </td>
 <td>
   <a href="ispaid.php?pid=<?= $row1['id']; ?>"<i class="fa fa-pencil" aria-hidden="true"></i><a/>

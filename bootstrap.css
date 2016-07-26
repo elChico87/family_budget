@@ -5037,6 +5037,11 @@ a.thumbnail.active {
   border: 1px solid transparent;
   border-radius: 4px;
 }
+.alert-table {
+	padding: 0;
+	margin-bottom: 0;
+}
+
 .alert h4 {
   margin-top: 0;
   color: inherit;
