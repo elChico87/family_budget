@@ -122,8 +122,10 @@
           </li>
         </ul>
       </div><!-- /.navbar-collapse -->
+
     </div><!-- /.container-fluid -->
   </nav>
+
 <div class="container">
   <div class="jumbotron">
     <p><u> <? echo  $test." ". $yer_name; ?></u></p>
@@ -137,8 +139,9 @@
     </div>
   </div>
 
-    <a href= "dodaj.php" class="btn btn-success" role="button">Dodaj nowy wydatek</a>
+    <a href= "add.php" class="btn btn-success" role="button">Dodaj nowy wydatek</a>
     <a href= "income.php" class="btn btn-success" role="button">Dodaj nowe wpływy</a>
+
       <table class="table table-striped table-bordered" id="example">
         <thead>
           <tr>
