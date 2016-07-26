@@ -1,4 +1,5 @@
 <?
+  session_set_cookie_params(300,'/');
   session_start();
   if (!isset($_SESSION['logged'])) {
     header('Location: login.phtml');
@@ -7,56 +8,62 @@
 ?>
 <!DOCTYPE html>
 <html lang="pl">
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta http-equiv="cache-control" content="max-age=0" />
-<meta http-equiv="cache-control" content="no-cache" />
-<meta http-equiv="expires" content="0" />
-<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
-<meta http-equiv="pragma" content="no-cache" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-<meta name="description" content="">
-<meta name="author" content="">
-<link rel="icon" href="../../favicon.ico">
-​
-<title>Budżet rodzinny</title>
-​
-<!-- Bootstrap core CSS -->
-<link href="css/bootstrap.min.css" rel="stylesheet">
-<link href="css/bootstrap-datepicker.css" rel="stylesheet">
-​
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-​
-<!-- Custom styles for this template -->
-<link href="css/starter-template.css" rel="stylesheet">
-​
-<!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-<!--[if lt IE 9]>
-<script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-<script src="js/ie-emulation-modes-warning.js"></script>
-​
-<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-<!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Budżet rodzinny">
+  <meta name="author" content="Pior Bielawski">
+  <link rel="icon" href="../../favicon.ico">
+  <title>Budżet rodzinny | Nowy wydatek</title>
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <link href="css/bootstrap-datepicker.css" rel="stylesheet">
+  <link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/font-awesome.min.css">
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="css/datatables.css"/>
+  <link href="css/starter-template.css" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 </head>
-​
 <body>
   <?php
-  $connection = new PDO('mysql:dbname=kamjol_test;host=localhost;port=3306', 'kamjol_test', 'Tester123', array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
-  $aid = $connection->prepare("SELECT id FROM BUDGET ORDER BY id DESC LIMIT 5", array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
-  $aid->execute();
-  $row = $aid->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_FIRST);
-  $highest_budget_id = $row[0];
+  require_once('config.php');
 
   $budget_list = $connection->prepare('SELECT p.name, pg.id FROM BUD_PARAM AS p INNER JOIN BUD_PARAM_GROUP AS pg ON p.ID = pg.fk_bud_param WHERE pg.fk_budget = :name');
   $budget_list->bindValue(':name', $highest_budget_id, PDO::PARAM_INT);
   $budget_list->execute();
   ?>
-<div class="container">
+<div class="container-fluid">
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <!-- Grupowanie "marki" i przycisku rozwijania mobilnego menu -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Rozwiń nawigację</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.php">Budżet rodzinny</a>
+      </div>
+
+      <!-- Grupowanie elementów menu w celu lepszego wyświetlania na urządzeniach moblinych -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Zalogowany jako: <? echo $_SESSION['user'];?><span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="#">Profil</a></li>
+              <li><a href="logout.php">Wyloguj</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+
+    </div><!-- /.container-fluid -->
+  </nav>
+  <div class="container">
   <div class="jumbotron">
     <h2>Budżet rodzinny</h1>
     <p>Dodawanie nowego wydatku</p>
@@ -117,7 +124,7 @@ $budget_list->closeCursor();
     $connection = null; //mysql_close($connection);
 
 ?>
-
+</div>
 </div>
 ​
 <!-- Bootstrap core JavaScript
