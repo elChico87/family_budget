@@ -60,10 +60,10 @@
     </div><!-- /.container-fluid -->
   </nav>
   <div class="container-fluid">
-  <div class="jumbotron col-sm-offset-2 col-sm-10">
+  <div class="jumbotron col-sm-offset-2 col-sm-8">
     <p>Dodawanie nowego wydatku</p>
   </div>
-  <form class="form-horizontal col-sm-offset-2 col-sm-10" role="form" action="add.php" method="post">
+  <form class="form-horizontal col-sm-offset-2 col-sm-8" role="form" action="add.php" method="post">
     <div class="form-group">
       <div class="col-sm-3">
         <button type="submit" class="btn btn-success">Zapisz</button>
@@ -78,7 +78,7 @@
            </tr>
          </thead>
          <tbody>
-<?php
+  <?php
 	foreach($budget_list as $row){
 	?>
 	<tr>
@@ -111,7 +111,7 @@ $budget_list->closeCursor();
 
 <?php
         $tablica_inputow = isset($_POST['input']) && is_array($_POST['input']) ? $_POST['input']  : array();
-        $chkbox = $connection->prepare("INSERT INTO BUD_PARAM_VALUE_GROUP (fk_bud_param_group, value, value_description, date_create) VALUES (:fk_bud_param_group, :value, :value_description, NOW())");
+        $chkbox = $connection->prepare("INSERT INTO BUD_PARAM_VALUE_GROUP (fk_bud_param_group, value, value_description, date_create, fk_person_create) VALUES (:fk_bud_param_group, :value, :value_description, NOW(), :fk_person_create)");
 
 
         foreach ($tablica_inputow as $fkBudParam => $value)
@@ -120,28 +120,23 @@ $budget_list->closeCursor();
           $chkbox->bindValue(':fk_bud_param_group', $fkBudParam , PDO::PARAM_INT);
           $chkbox->bindValue(':value', $value, PDO::PARAM_INT);
           $chkbox->bindValue(':value_description',  "", PDO::PARAM_STR);
+          $chkbox->bindValue(':fk_person_create', $_SESSION['id'], PDO::PARAM_INT);
 
           $chkbox->execute();
         }
       }
-
-
     $connection = null; //mysql_close($connection);
-
 ?>
 </div>
 </div>
-​
-<!-- Bootstrap core JavaScript
- ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
 <script type="text/javascript" src="js/datatables.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script>$(document).ready( function () {
     $('#example').DataTable();
-} );</script>
+} );
+</script>
 
 
 </body>

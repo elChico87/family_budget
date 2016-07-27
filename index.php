@@ -67,7 +67,7 @@
   $budget_reward2->bindValue(':id', $highest_budget_id, PDO::PARAM_INT);
   $budget_reward2->execute();
 
-  $last_update = $connection -> prepare('SELECT p.date_create FROM `BUD_PARAM_VALUE_GROUP` AS p INNER JOIN `BUD_PARAM_GROUP` AS pg ON p.fk_bud_param_group = pg.ID WHERE fk_budget = :fk_budget ORDER BY p.date_create DESC LIMIT 1');
+  $last_update = $connection -> prepare('SELECT p.date_create, l.nickname FROM `BUD_PARAM_VALUE_GROUP` AS p INNER JOIN `BUD_PARAM_GROUP` AS pg ON p.fk_bud_param_group = pg.ID INNER JOIN `PERSON` AS l ON p.fk_person_create = l.id WHERE fk_budget = :fk_budget ORDER BY p.date_create DESC LIMIT 1');
   $last_update->bindValue(':fk_budget', $highest_budget_id, PDO::PARAM_INT);
   $last_update->execute();
   $last_update2 = $last_update->fetch();
@@ -135,7 +135,7 @@
       <p>Ile procent budżetu wykorzystano: <strong><? echo round((($sum2[0]/$reward[0])*100),2);?><span>%</span></strong></p>
       <p class="text-success">Oszędności: <strong><? $reward = $budget_reward ->fetch(); echo $reward[0];?> <span> zł</span></strong></p>
       <p>w tym, pożyczyliśmy: <strong><? $reward = $budget_reward ->fetch(); echo $reward[0];?> <span> zł</span></strong></p>
-      <p>Ostatnia aktualizacja: <span><? echo $last_update2[0];?></span> przez: </p>
+      <p>Ostatnia aktualizacja: <span><? echo $last_update2[0];?></span> przez: <? echo $last_update2[1]; ?> </p>
     </div>
   </div>
 
