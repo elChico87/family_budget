@@ -20,14 +20,21 @@
   <link rel="stylesheet" type="text/css" href="css/datatables.css"/>
   <link href="css/starter-template.css" rel="stylesheet">
   <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script type="text/javascript" src="js/datatables.js"></script>
 </head>
 <body>
+  <script>$(document).ready( function () {
+      $('#example').DataTable();
+  } );
+  </script>
   <?php
   require_once('config.php');
 
   $budget_list = $connection->prepare('SELECT p.name, pg.id FROM BUD_PARAM AS p INNER JOIN BUD_PARAM_GROUP AS pg ON p.ID = pg.fk_bud_param WHERE pg.fk_budget = :name');
   $budget_list->bindValue(':name', $highest_budget_id, PDO::PARAM_INT);
   $budget_list->execute();
+
   ?>
 
 <div class="container-fluid">
@@ -63,7 +70,7 @@
   <div class="jumbotron col-sm-offset-2 col-sm-8">
     <p>Dodawanie nowego wydatku</p>
   </div>
-  <form class="form-horizontal col-sm-offset-2 col-sm-8" role="form" action="add.php" method="post">
+  <form class="form-horizontal col-sm-offset-2 col-sm-8" role="form" action="<?echo htmlspecialchars($_SERVER['PHP_SELF'])?>" method="POST">
     <div class="form-group">
       <div class="col-sm-3">
         <button type="submit" class="btn btn-success">Zapisz</button>
@@ -81,62 +88,52 @@
   <?php
 	foreach($budget_list as $row){
 	?>
-	<tr>
-		<td><?= $row['name']; ?></td>
-		<td>
-			<input type="text" class="form-control" name = "input[<?= $row['id']; ?>]" size="2">
-		</td>
-    <td>
-      <input type="text" class="form-control" name = "description[<?= $row['id']; ?>]" size="2">
-	  </tr>
+	        <tr>
+            <td><?= $row['name']; ?></td>
+            <td><input type="text" class="form-control" name = "input[<?= $row['id']; ?>]" size="8">
+            </td>
+            <td><input type="text" class="form-control" name = "description[<?= $row['id']; ?>]" size="60">
+          </tr>
 	<?php
 	}
-	?><tfoot>
-    <tr>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-  </tfoot>
-	</tbody>
-</table>
-​
+	?>
+        <tfoot>
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </tfoot>
+      </tbody>
+    </table>
+  </form>
+  </div>
+</div>
 <?php
-$budget_list->closeCursor();
-?>
-
-    </form>
-
-
-
-<?php
-        $tablica_inputow = isset($_POST['input']) && is_array($_POST['input']) ? $_POST['input']  : array();
-        $chkbox = $connection->prepare("INSERT INTO BUD_PARAM_VALUE_GROUP (fk_bud_param_group, value, value_description, date_create, fk_person_create) VALUES (:fk_bud_param_group, :value, :value_description, NOW(), :fk_person_create)");
-
-
-        foreach ($tablica_inputow as $fkBudParam => $value)
-          {
+      $budget_list->closeCursor();
+      if ($_SERVER['REQUEST_METHOD'] =="POST"){
+      $input_arr = isset($_POST['input']) && is_array($_POST['input']) ? $_POST['input']  : array();
+      $description_arr = isset($_POST['description']) && is_array($_POST['description']) ? $_POST['description'] : array();
+      $stmt = $connection->prepare("INSERT INTO BUD_PARAM_VALUE_GROUP (fk_bud_param_group, value, value_description, date_create, fk_person_create) VALUES (:fk_bud_param_group, :value, :value_description, NOW(), :fk_person_create)");
+        foreach ($input_arr as $index => $value){
             if ($value > 0){
-          $chkbox->bindValue(':fk_bud_param_group', $fkBudParam , PDO::PARAM_INT);
-          $chkbox->bindValue(':value', $value, PDO::PARAM_INT);
-          $chkbox->bindValue(':value_description',  "", PDO::PARAM_STR);
-          $chkbox->bindValue(':fk_person_create', $_SESSION['id'], PDO::PARAM_INT);
-
-          $chkbox->execute();
+              $stmt->bindValue(':fk_bud_param_group', $index , PDO::PARAM_INT);
+              $stmt->bindValue(':value', $value, PDO::PARAM_INT);
+              $stmt->bindValue(':value_description',  $description_arr[$index], PDO::PARAM_STR);
+              $stmt->bindValue(':fk_person_create', $_SESSION['id'], PDO::PARAM_INT);
+              $stmt->execute();
+            }
+          }
+        $stmt = closeCursor();
         }
-      }
-    $connection = null; //mysql_close($connection);
+      $connection = null; //mysql_close($connection);
 ?>
-</div>
-</div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+
 <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-<script type="text/javascript" src="js/datatables.js"></script>
+
 <script src="js/bootstrap.min.js"></script>
-<script>$(document).ready( function () {
-    $('#example').DataTable();
-} );
-</script>
+
 
 
 </body>
