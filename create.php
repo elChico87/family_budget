@@ -55,7 +55,7 @@
         <h1>Budżet rodzinny - v0.1</h1>
         <p class="lead">Dodawanie nowego budżetu</p>
     </div>
-    <form class="form-horizontal" role="form" action="index.php" method="post">
+    <form class="form-horizontal" role="form" action="create.php" method="post">
         <div class="form-group">
             <label class="control-label col-sm-2" for="budget_date">Wybierz miesiąc:</label>
             <div class="col-sm-3">
@@ -142,13 +142,12 @@ if(isset($_POST['budget_date'])){
 
         $tablica_checkboxow = isset($_POST['checkbox']) && is_array($_POST['checkbox']) ? $_POST['checkbox']  : array();
         $tablica_inputow = isset($_POST['input']) && is_array($_POST['input']) ? $_POST['input']  : array();
-        $chkbox = $connection->prepare('INSERT INTO BUD_PARAM_VALUE (fk_budget, fk_bud_param, plan_value, value) VALUES (:fk_budget, :fk_bud_param, :plan_value, :value)');
+        $chkbox = $connection->prepare('INSERT INTO BUD_PARAM_GROUP (fk_budget, fk_bud_param, plan_value) VALUES (:fk_budget, :fk_bud_param, :plan_value)');
        foreach ($tablica_checkboxow as $index => $fk_bud_param)
           {
           $chkbox->bindValue(':fk_budget', $lastbudget , PDO::PARAM_INT);
           $chkbox->bindValue(':fk_bud_param', $fk_bud_param, PDO::PARAM_INT);
           $chkbox->bindValue(':plan_value', $tablica_inputow[$index], PDO::PARAM_INT);
-          $chkbox->bindValue(':value', 0.00 , PDO::PARAM_INT);
 
           $chkbox->execute();
         }

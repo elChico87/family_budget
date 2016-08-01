@@ -116,13 +116,13 @@
       $description_arr = isset($_POST['description']) && is_array($_POST['description']) ? $_POST['description'] : array();
       $stmt = $connection->prepare("INSERT INTO BUD_PARAM_VALUE_GROUP (fk_bud_param_group, value, value_description, date_create, fk_person_create) VALUES (:fk_bud_param_group, :value, :value_description, NOW(), :fk_person_create)");
         foreach ($input_arr as $index => $value){
-            if ($value > 0){
+
               $stmt->bindValue(':fk_bud_param_group', $index , PDO::PARAM_INT);
               $stmt->bindValue(':value', $value, PDO::PARAM_INT);
               $stmt->bindValue(':value_description',  $description_arr[$index], PDO::PARAM_STR);
               $stmt->bindValue(':fk_person_create', $_SESSION['id'], PDO::PARAM_INT);
               $stmt->execute();
-            }
+    
           }
         $stmt = closeCursor();
         }
