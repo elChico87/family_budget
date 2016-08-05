@@ -15,7 +15,7 @@
   <meta name="description" content="Budżet rodzinny">
   <meta name="author" content="Pior Bielawski">
   <link rel="icon" href="../../favicon.ico">
-  <title>Budżet rodzinny | Nowy wydatek</title>
+  <title>Budżet rodzinny | Nowe wpływy</title>
   <link href="css/bootstrap.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/datatables.css"/>
   <link href="css/starter-template.css" rel="stylesheet">
@@ -30,10 +30,9 @@
   </script>
   <?php
   require_once('config.php');
-
-  $budget_list = $connection->prepare('SELECT p.name, pg.id FROM BUD_PARAM AS p INNER JOIN BUD_PARAM_GROUP AS pg ON p.ID = pg.fk_bud_param WHERE pg.fk_budget = :name');
-  $budget_list->bindValue(':name', $highest_budget_id, PDO::PARAM_INT);
-  $budget_list->execute();
+  $income_list = $connection->prepare('SELECT p.income_name, pg.id, pg.income_value FROM BUD_INCOME AS p INNER JOIN BUD_INCOME_PARAM AS pg ON p.ID = pg.fk_bud_income WHERE pg.fk_budget = :name', array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+  $income_list->bindValue(':name', $highest_budget_id, PDO::PARAM_INT);
+  $income_list->execute();
 
   ?>
 
@@ -68,7 +67,7 @@
   </nav>
   <div class="container-fluid">
   <div class="jumbotron col-sm-offset-2 col-sm-8">
-    <p>Dodawanie nowego wydatku</p>
+    <p>Zarządzanie wpływami</p>
   </div>
   <form class="form-horizontal col-sm-offset-2 col-sm-8" role="form" action="<?echo htmlspecialchars($_SERVER['PHP_SELF'])?>" method="POST">
     <div class="form-group">
@@ -81,26 +80,23 @@
            <tr>
              <th>Składnik</th>
              <th>Kwota (w zł)</th>
-             <th>Opis</th>
            </tr>
          </thead>
          <tbody>
   <?php
-	foreach($budget_list as $row){
+	   foreach($income_list as $row){
 	?>
 	        <tr>
-            <td><?= $row['name']; ?></td>
-            <td><input type="text" class="form-control" name = "input[<?= $row['id']; ?>]" size="8">
+            <td><?= $row['income_name']; ?></td>
+            <td><input type="text" class="form-control" name = "income[<?= $row['id']; ?>]" size="8" value = "<? echo $row['income_value']?>">
             </td>
-            <td><input type="text" class="form-control" name = "description[<?= $row['id']; ?>]" size="60">
           </tr>
 	<?php
 	}
-  $budget_list->closeCursor();
+  $income_list->closeCursor();
 	?>
         <tfoot>
           <tr>
-            <th></th>
             <th></th>
             <th></th>
           </tr>
@@ -113,20 +109,17 @@
 <?php
 
       if ($_SERVER['REQUEST_METHOD'] =="POST"){
-      $input_arr = isset($_POST['input']) && is_array($_POST['input']) ? $_POST['input']  : array();
-      $description_arr = isset($_POST['description']) && is_array($_POST['description']) ? $_POST['description'] : array();
-      $stmt = $connection->prepare("INSERT INTO BUD_PARAM_VALUE_GROUP (fk_bud_param_group, value, value_description, date_create, fk_person_create) VALUES (:fk_bud_param_group, :value, :value_description, NOW(), :fk_person_create)");
-        foreach ($input_arr as $index => $value){
-            if ($value > 0){
-              $stmt->bindValue(':fk_bud_param_group', $index , PDO::PARAM_INT);
-              $stmt->bindValue(':value', $value, PDO::PARAM_INT);
-              $stmt->bindValue(':value_description',  $description_arr[$index], PDO::PARAM_STR);
-              $stmt->bindValue(':fk_person_create', $_SESSION['id'], PDO::PARAM_INT);
+      $income_arr = isset($_POST['income']) && is_array($_POST['income']) ? $_POST['income']  : array();
+      $stmt = $connection->prepare("UPDATE BUD_INCOME_PARAM SET income_value =:income_value WHERE id =:id");
+
+          foreach ($income_arr as $index => $value){
+              $stmt->bindValue(':income_value', $value, PDO::PARAM_INT);
+              $stmt->bindValue(':id', $index, PDO::PARAM_INT);
               $stmt->execute();
             }
+
           }
-        $stmt = closeCursor();
-        }
+
       $connection = null; //mysql_close($connection);
 
 ?>
