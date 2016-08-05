@@ -117,6 +117,7 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Zalogowany jako: <? echo $_SESSION['user'];?><span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="#">Profil</a></li>
+              <li><a href="archive.phtml">Archiwum</a></li>
               <li><a href="logout.php">Wyloguj</a></li>
             </ul>
           </li>

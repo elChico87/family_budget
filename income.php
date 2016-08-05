@@ -15,7 +15,7 @@
   <meta name="description" content="Budżet rodzinny">
   <meta name="author" content="Pior Bielawski">
   <link rel="icon" href="../../favicon.ico">
-  <title>Budżet rodzinny | Nowe wpływy</title>
+  <title>Budżet rodzinny | Zarządznie wpływami</title>
   <link href="css/bootstrap.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/datatables.css"/>
   <link href="css/starter-template.css" rel="stylesheet">
@@ -33,7 +33,6 @@
   $income_list = $connection->prepare('SELECT p.income_name, pg.id, pg.income_value FROM BUD_INCOME AS p INNER JOIN BUD_INCOME_PARAM AS pg ON p.ID = pg.fk_bud_income WHERE pg.fk_budget = :name', array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
   $income_list->bindValue(':name', $highest_budget_id, PDO::PARAM_INT);
   $income_list->execute();
-
   ?>
 
 <div class="container-fluid">
