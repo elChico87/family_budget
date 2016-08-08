@@ -1,0 +1,119 @@
+<?
+  session_set_cookie_params(600,'/');
+  session_start();
+  if (!isset($_SESSION['logged'])) {
+    header('Location: login.phtml');
+    exit();
+  }
+?>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Budżet rodzinny">
+  <meta name="author" content="Pior Bielawski">
+  <link rel="icon" href="../../favicon.ico">
+  <title>Budżet rodzinny | Archwium</title>
+  <link href="css/bootstrap.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="css/datatables.css"/>
+  <link href="css/starter-template.css" rel="stylesheet">
+  <link href="css/font-awesome.css" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script type="text/javascript" src="js/datatables.js"></script>
+</head>
+<body>
+  <script>$(document).ready( function () {
+      $('#example').DataTable();
+  } );
+  </script>
+  <?php
+  require_once('config.php');
+  $archive_list = $connection->prepare('SELECT p.id, p.month_name, p.date_create, p.fk_user_create, pg.nickname, pg.id FROM BUDGET as p INNER JOIN PERSON as pg ON pg.id = p.fk_user_create WHERE p.id != :id');
+  $archive_list->bindValue(':id', $highest_budget_id, PDO::PARAM_INT);
+  $archive_list->execute();
+  ?>
+
+<div class="container-fluid">
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <!-- Grupowanie "marki" i przycisku rozwijania mobilnego menu -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Rozwiń nawigację</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.php">Budżet rodzinny</a>
+      </div>
+
+      <!-- Grupowanie elementów menu w celu lepszego wyświetlania na urządzeniach moblinych -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Zalogowany jako: <? echo $_SESSION['user'];?><span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="#">Profil</a></li>
+              <li><a href="logout.php">Wyloguj</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+  <div class="container-fluid">
+  <div class="jumbotron col-sm-offset-2 col-sm-8">
+    <p>Archiwum</p>
+  </div>
+  <div class="container-fluid">
+    <div class = "col-sm-offset-2 col-sm-8">
+    <table class="table table-striped table-bordered" id="example">
+	       <thead>
+           <tr>
+             <th>ID</th>
+             <th>Miesiąc</th>
+             <th>Data utworzenia</th>
+             <th>Utworzone przez</th>
+             <th>Akcja</th>
+           </tr>
+         </thead>
+         <tbody>
+  <?php
+	   foreach($archive_list as $row){
+	?>
+	        <tr>
+            <td><?= $row['id']; ?></td>
+            <td><?= $row['month_name']; ?></td>
+            <td><?= $row['date_create']; ?></td>
+            <td><?= $row['nickname']; ?></td>
+            <td><a href="<?= $row['id']; ?>" title = "Zobacz szczegóły budżetu"><i class="fa fa-search-plus" aria-hidden ="true"></i></a></td>
+          </tr>
+	<?php
+	}
+  $archive_list->closeCursor();
+	?>
+        <tfoot>
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </tfoot>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+<?php
+      $connection = null;
+?>
+<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>
