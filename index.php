@@ -33,7 +33,7 @@
   $row = $aid->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_FIRST);
   $highest_budget_id = $row[0];
 
-  $budget_list = $connection->prepare('SELECT p.id, p.name, pg.plan_value, pg.ispaid FROM BUD_PARAM AS p INNER JOIN BUD_PARAM_GROUP AS pg ON p.ID = pg.fk_bud_param WHERE pg.fk_budget = :name');
+  $budget_list = $connection->prepare('SELECT p.id, p.name, pg.plan_value, pg.ispaid, pg.id as ispaid_number FROM BUD_PARAM AS p INNER JOIN BUD_PARAM_GROUP AS pg ON p.ID = pg.fk_bud_param WHERE pg.fk_budget = :name');
   $budget_list->bindValue(':name', $highest_budget_id, PDO::PARAM_INT);
   $budget_list->execute();
 
@@ -176,7 +176,7 @@
 <td><p><? if ($row1['ispaid'] == 'Tak') {echo '<div class="alert alert-info alert-table">Tak!</div>';} else { echo 'Nie';} ?></p>
 </td>
 <td>
-  <a href="ispaid.php?pid=<?= $row1['id']; ?>"<i class="fa fa-pencil" aria-hidden="true"></i><a/>
+  <a href="ispaid.php?pid=<?= $row1['ispaid_number']; ?>"<i class="fa fa-pencil" aria-hidden="true"></i><a/>
 </td>
 
 </tr>
